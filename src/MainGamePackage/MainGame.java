@@ -169,24 +169,6 @@ public class MainGame extends javax.swing.JFrame {
                 }
             }
         }
-        
-        /*
-        public void changeGameState(String currentState) {
-            boolean canPlay = false;
-            
-            player1.playerColor = getClr((String)jComboBox1.getSelectedItem());
-            player2.playerColor = getClr((String)jComboBox2.getSelectedItem());
-            player3.playerColor = getClr((String)jComboBox3.getSelectedItem());
-            
-            if (player1.playerColor != player2.playerColor && 
-                    player2.playerColor != player3.playerColor) {
-                canPlay = true;
-            }
-            
-         
-        }
-        */
-        
     }
     
     /**
@@ -198,11 +180,10 @@ public class MainGame extends javax.swing.JFrame {
     public MainGame() {
         initComponents();
         gameScreen.setLayout(new GridLayout(8, 8, 4, 4));
-        //stay here for now
         
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                int currentRow = row; // need to delare these vars here for them to be final, yet changing
+                int currentRow = row; // need to delare these vars here for them to be final, yet changing values
                 int currentCol = col;
                 grid[row][col] = new JButton();
                 grid[row][col].setBackground(Color.white);
@@ -325,27 +306,28 @@ public class MainGame extends javax.swing.JFrame {
         
         if (player1.playerColor != player2.playerColor && 
                     player2.playerColor != player3.playerColor) {
-        switch (jButton1.getText()) {
-            case "Start Game"->{
-               jButton1.setText("Reset Game");
-               jTextField1.setText("Player 1");
-            }
-            case "Reset Game"->{
-                jButton1.setText("Start Game");
-                for (int row = 0; row < 8; row ++) {
-                    for (int col = 0; col < 8; col++) {
-                        grid[row][col].setBackground(Color.white);
-                    }
+            switch (jButton1.getText()) {
+                case "Start Game"->{
+                    jButton1.setText("Reset Game");
+                    jTextField1.setText("Player 1");
                 }
-                player1.playerColor = Color.white;
-                player2.playerColor = Color.white;
-                player3.playerColor = Color.white;
-                currentTurn = '1';
-                jTextField1.setText("Player 1");
-                jTextField2.setText("Player 2");
-                jTextField3.setText("Player 3");
+                case "Reset Game"->{
+                    jButton1.setText("Start Game");
+                    for (int row = 0; row < 8; row ++) {
+                        for (int col = 0; col < 8; col++) {
+                            grid[row][col].setBackground(Color.white);
+                        }
+                    }
+                    player1.playerColor = Color.white;
+                    player2.playerColor = Color.white;
+                    player3.playerColor = Color.white;
+                    currentTurn = '1';
+                    jTextField1.setText("Player 1");
+                    jTextField2.setText("Player 2");
+                    jTextField3.setText("Player 3");
+                }
+                default->{ System.out.println("An error has occured."); }
             }
-        ee}
         }
     }//GEN-LAST:event_jButton1ActionPerformed
    
