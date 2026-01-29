@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent; // for action events to allow each button to 
  * 
  * 
  * @Todo    Fix reset of board, add view of current turn, general code 
- improvement, upload to github
+ improvement
  * 
  */
 public class MainGame extends javax.swing.JFrame {
@@ -120,18 +120,73 @@ public class MainGame extends javax.swing.JFrame {
         * @return       none
         */
         public void placeTile(int row, int col) {
-            Color checkTile = grid[row][col].getBackground();            
+            Color checkTile = grid[row][col].getBackground();
             
             if (checkTile == Color.white) {
                 grid[row][col].setBackground(playerColor);
                 switch(currentTurn) {
-                    case '1'->{ currentTurn = checkWin() ? '4' : '2'; }
-                    case '2'->{ currentTurn = checkWin() ? '4' : '3'; }
-                    case '3'->{ currentTurn = checkWin() ? '4' : '1'; }
+                    case '1'->{ 
+                        if (!checkWin()) {
+                            currentTurn = '2';
+                            jTextField1.setText("Player 1");
+                            jTextField2.setText("PLAYING");
+                            jTextField3.setText("Player 2");
+                        } else {
+                            currentTurn = '4';
+                            jTextField1.setText("WINNER");
+                            jTextField2.setText("Player 2");
+                            jTextField3.setText("Player 3");
+                        }
+                    }
+                    case '2'->{ 
+                        if (!checkWin()) {
+                            currentTurn = '3';
+                            jTextField1.setText("Player 1");
+                            jTextField2.setText("Player 2");
+                            jTextField3.setText("PLAYING");
+                        } else {
+                            currentTurn = '4';
+                            jTextField1.setText("Player 1");
+                            jTextField2.setText("WINNER");
+                            jTextField3.setText("Player 3");
+                        }
+                    }
+                    case '3'->{ 
+                        /* currentTurn = checkWin() ? '4' : '1'; */ 
+                        if (!checkWin()) {
+                            currentTurn = '1';
+                            jTextField1.setText("PLAYING");
+                            jTextField2.setText("Player 2");
+                            jTextField3.setText("Player 3");
+                        } else {
+                            currentTurn = '4';
+                            jTextField1.setText("Player 1");
+                            jTextField2.setText("Player 2");
+                            jTextField3.setText("WINNER");
+                        }
+                    }
                     default->{ System.out.println("Error occured"); }
                 }
             }
         }
+        
+        /*
+        public void changeGameState(String currentState) {
+            boolean canPlay = false;
+            
+            player1.playerColor = getClr((String)jComboBox1.getSelectedItem());
+            player2.playerColor = getClr((String)jComboBox2.getSelectedItem());
+            player3.playerColor = getClr((String)jComboBox3.getSelectedItem());
+            
+            if (player1.playerColor != player2.playerColor && 
+                    player2.playerColor != player3.playerColor) {
+                canPlay = true;
+            }
+            
+         
+        }
+        */
+        
     }
     
     /**
@@ -264,12 +319,16 @@ public class MainGame extends javax.swing.JFrame {
     * @return       none
     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        player1.playerColor = getClr((String)jComboBox1.getSelectedItem());
+        player2.playerColor = getClr((String)jComboBox2.getSelectedItem());
+        player3.playerColor = getClr((String)jComboBox3.getSelectedItem());
+        
+        if (player1.playerColor != player2.playerColor && 
+                    player2.playerColor != player3.playerColor) {
         switch (jButton1.getText()) {
             case "Start Game"->{
                jButton1.setText("Reset Game");
-               player1.playerColor = getClr((String)jComboBox1.getSelectedItem());
-               player2.playerColor = getClr((String)jComboBox2.getSelectedItem());
-               player3.playerColor = getClr((String)jComboBox3.getSelectedItem());
+               jTextField1.setText("Player 1");
             }
             case "Reset Game"->{
                 jButton1.setText("Start Game");
@@ -281,10 +340,15 @@ public class MainGame extends javax.swing.JFrame {
                 player1.playerColor = Color.white;
                 player2.playerColor = Color.white;
                 player3.playerColor = Color.white;
+                currentTurn = '1';
+                jTextField1.setText("Player 1");
+                jTextField2.setText("Player 2");
+                jTextField3.setText("Player 3");
             }
+        ee}
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+   
     /*
     * @brief        take the string from a players combo box, and return correct Color.
     * @param[in]    String 'colorName' is the selected color in the combo box
