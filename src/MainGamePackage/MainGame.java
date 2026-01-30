@@ -5,6 +5,7 @@ import java.awt.Color; // for JButton colors
 import javax.swing.JButton; // for JButton
 import java.awt.GridLayout; // for grid layout
 import java.awt.event.ActionEvent; // for action events to allow each button to do a thing
+import java.awt.event.ActionListener; // for implimenting the action listener into a class to pass int's
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -26,150 +27,13 @@ import java.awt.event.ActionEvent; // for action events to allow each button to 
  * 
  */
 public class MainGame extends javax.swing.JFrame {
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainGame.class.getName());
     
     //Vars
     JButton[][] grid = new JButton[8][8];
     char currentTurn = '1';
     Player player1 = new Player(), player2 = new Player(), player3 = new Player();
-    
-    /**
-     * 
-     * This class allows the creation of a player object, with methods to check
-     * if someone has won, place a tile on a empty space, and ...
-     */
-    public class Player{
-        Color playerColor = Color.white; // set to prevent pre-selection play
-        //Constructor
-        Player() { /* do nothing */ }
-            
-        //Member functions
-        /*
-        * @brief    function to check all tiles for victory or tie
-        * @param    none
-        *
-        * @pre      grid must be declared in gameScreen
-        * @post     returned bool if player has won or tied
-        * @return   true if game is tied or a winner has been found, false otherwise
-        */
-        public boolean checkWin() {
-            boolean hasWon = false;
-            int winScore = 0;
-            int checkForTie = 0;
-                
-            // check background for tie
-            for (int row = 0; row < 8; row++) {
-                for (int col = 0; col < 8; col++) {
-                    if (grid[row][col].getBackground() != Color.white) {
-                        checkForTie++;
-                        if (checkForTie >= 64) { hasWon = true; }
-                    } else {
-                        checkForTie = 0;
-                    }
-                }
-            }
-                
-            // check for player victory
-            for (int row = 0; row < 8; row++) {
-                for (int col = 0; col < 8; col++) {
-                    if(grid[row][col].getBackground() == playerColor) {
-                        winScore++;
-                        if (winScore >= 4) { hasWon = true; }
-                    } else { 
-                        winScore = 0; 
-                    }
-                }
-            }
-            for (int col = 0; col < 8; col++) {
-                for (int row = 0; row < 8; row++) {
-                    if(grid[row][col].getBackground() == playerColor) {
-                        winScore++;
-                        if (winScore >= 4) { hasWon = true; }
-                    } else { 
-                        winScore = 0; 
-                    }
-                }
-            }
-            for (int d1 = 0; d1 < 8; d1++) {
-                if(grid[d1][d1].getBackground() == playerColor) {
-                    winScore++;
-                    if (winScore >= 4) { hasWon = true; }
-                } else { 
-                    winScore = 0; 
-                }
-            }
-              
-            for (int col = 0; col < 8; col++) {
-                if(grid[7 - col][col].getBackground() == playerColor) {
-                    winScore++;
-                    if (winScore >= 4) { hasWon = true; }
-                } else { 
-                    winScore = 0; 
-                }
-            }
-            return hasWon;
-        }
-        
-        /*
-        * @brief        place tiles on unclicked buttons
-        * @param[in]    int 'row' that is the row of the selected tile
-        * @param[in]    int 'col' that is the col of the selected tile
-        *
-        * @pre          grid must be declared in gameScreen, user must click on a tile
-        * @post         untouched tile changes to players selected color, turn order changes
-        * @return       none
-        */
-        public void placeTile(int row, int col) {
-            Color checkTile = grid[row][col].getBackground();
-            
-            if (checkTile == Color.white) {
-                grid[row][col].setBackground(playerColor);
-                switch(currentTurn) {
-                    case '1'->{ 
-                        if (!checkWin()) {
-                            currentTurn = '2';
-                            jTextField1.setText("Player 1");
-                            jTextField2.setText("PLAYING");
-                            jTextField3.setText("Player 2");
-                        } else {
-                            currentTurn = '4';
-                            jTextField1.setText("WINNER");
-                            jTextField2.setText("Player 2");
-                            jTextField3.setText("Player 3");
-                        }
-                    }
-                    case '2'->{ 
-                        if (!checkWin()) {
-                            currentTurn = '3';
-                            jTextField1.setText("Player 1");
-                            jTextField2.setText("Player 2");
-                            jTextField3.setText("PLAYING");
-                        } else {
-                            currentTurn = '4';
-                            jTextField1.setText("Player 1");
-                            jTextField2.setText("WINNER");
-                            jTextField3.setText("Player 3");
-                        }
-                    }
-                    case '3'->{ 
-                        /* currentTurn = checkWin() ? '4' : '1'; */ 
-                        if (!checkWin()) {
-                            currentTurn = '1';
-                            jTextField1.setText("PLAYING");
-                            jTextField2.setText("Player 2");
-                            jTextField3.setText("Player 3");
-                        } else {
-                            currentTurn = '4';
-                            jTextField1.setText("Player 1");
-                            jTextField2.setText("Player 2");
-                            jTextField3.setText("WINNER");
-                        }
-                    }
-                    default->{ System.out.println("Error occured"); }
-                }
-            }
-        }
-    }
     
     /**
      * Creates new form MainGame
@@ -179,27 +43,194 @@ public class MainGame extends javax.swing.JFrame {
      */
     public MainGame() {
         initComponents();
+        // handles all of game functions
+        runGame();
+       
+    }
+    
+    /*
+    * @brief    function to set grid and run gameloop
+    * @pre      grid must be declared and unfilled in gameScreen jPanel
+    * @post     grid is filled, game is run
+    */
+    private void runGame() {
         gameScreen.setLayout(new GridLayout(8, 8, 4, 4));
         
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                int currentRow = row; // need to delare these vars here for them to be final, yet changing values
-                int currentCol = col;
                 grid[row][col] = new JButton();
                 grid[row][col].setBackground(Color.white);
                 gameScreen.add(grid[row][col]);
-                grid[row][col].addActionListener((ActionEvent e) -> { 
-                       switch (currentTurn) {
-                           case '1'->{player1.placeTile(currentRow, currentCol);}
-                           case '2'->{player2.placeTile(currentRow, currentCol);}
-                           case '3'->{player3.placeTile(currentRow, currentCol);}
-                           case '4'->{ System.out.println("Game is Over"); }
-                           default->{System.out.println("An error has occured");}
-                       }
-                });
+                grid[row][col].addActionListener(new NumsActionListner(row, col));
             }
-        } 
+        }
     }
+    
+    /*
+    * This class impliments ActionListener so it can be constructed with the rows
+    and cols of the runGame() function, and to make all buttons clickable, trying to avoid repition
+    */
+    public class NumsActionListner implements ActionListener {
+        final int row;
+        final int col;
+        private int checkTie = 0;
+        
+        // Constructor
+        public NumsActionListner(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+        /*
+        * @brief    function to detect when a button is clicked, place the correct 
+        tile, and end the game if it is a tie.
+        * @param    ActionEvent e to detect when the user presses a button in the program        
+        * @pre      Grid must be filled, and .addActionListner() called with this class constructor
+        * @post     Selected button will be changed to color, and if there is a Tie the game will end
+        */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            checkTie++;
+            if (checkTie < 64) {
+                switch (currentTurn) {
+                    case '1'->{player1.placeTile(row, col);}
+                    case '2'->{player2.placeTile(row, col);}
+                    case '3'->{player3.placeTile(row, col);}
+                    case '4'->{ System.out.println("Game is Over"); }
+                    default->{System.out.println("An error has occured");}
+                }
+            } else {
+                jTextField1.setText("TIE");
+                jTextField2.setText("TIE");
+                jTextField3.setText("TIE");
+            }
+        }
+    }
+    
+    /**
+     * This class allows the creation of a player object, with methods to check
+     * if someone has won, and to place a tile on a selected row and col of the grid
+     */
+    public class Player{
+        Color playerColor = Color.white; // set to prevent pre-selection play
+        int checkRow = 0, checkCol = 0; // for diagonal checks
+        /*
+        * @brief    function to check all tiles for victory or tie
+        * @pre      grid must be declared in gameScreen
+        * @post     returned bool if player has won or tied
+        * @return   true if game is tied or a winner has been found, false otherwise
+        */
+        public boolean checkWin() {
+            boolean hasWon = false;
+            int winScore = 0;
+            // check for player victory
+            // check cols
+            for (int row = 0; row < 8; row++) {
+                for (int col = 0; col < 8; col++) {
+                    if(grid[row][col].getBackground() == this.playerColor) {
+                        winScore++;
+                        if (winScore >= 4) { hasWon = true; }
+                    } else { 
+                        winScore = 0; 
+                    }
+                }
+                winScore = 0; // if the final checked block is the playerColor, reset score to prevent false victory
+            }
+            // check rows
+            for (int col = 0; col < 8; col++) {
+                for (int row = 0; row < 8; row++) {
+                    if(grid[row][col].getBackground() == this.playerColor) {
+                        winScore++;
+                        if (winScore >= 4) { hasWon = true; }
+                    } else { 
+                        winScore = 0; 
+                    }
+                }
+                winScore = 0; // if the final checked block is the playerColor, reset score to prevent false victory
+            }
+            // check diagonal win
+            for (int col = 0; col < 8; col++) {
+                for (int row = 0; row < 8; row++) {
+                    if (grid[row][col].getBackground() == this.playerColor) {
+                        checkRow = row;
+                        checkCol = col;
+                        // check down-right direction
+                        while (checkRow < 8 && checkCol < 8 && 
+                                grid[checkRow][checkCol].getBackground() == this.playerColor) {
+                            winScore++;
+                            checkRow++;
+                            checkCol++;
+                            if (winScore >= 4) { hasWon = true; }
+                        }
+                        // if first checj fails, reset score, and check down-left
+                        winScore = 0;
+                        checkRow = row;
+                        checkCol = col;
+                        while (checkRow < 8 && checkCol >= 0 && 
+                                grid[checkRow][checkCol].getBackground() == this.playerColor) {
+                            winScore++;
+                            checkRow++;
+                            checkCol--;
+                            if (winScore >= 4) { hasWon = true; }
+                        }
+                        winScore = 0;
+                    }
+                }
+                winScore = 0;
+            }
+            return hasWon;
+        }
+        
+        /*
+        * @brief        place tiles on unclicked buttons
+        * @param[in]    int 'row' that is the row of the selected tile
+        * @param[in]    int 'col' that is the col of the selected tile
+        * @pre          grid must be declared in gameScreen, user must click on a tile
+        * @post         untouched tile changes to players selected color, turn order changes
+        */
+        public void placeTile(int row, int col) {
+            Color checkTile = grid[row][col].getBackground();
+            
+            if (checkTile == Color.white && player1.playerColor != 
+                    player2.playerColor && player2.playerColor != player3.playerColor) {
+                grid[row][col].setBackground(playerColor);
+                switch(currentTurn) {
+                    case '1'->{ 
+                        if (!checkWin()) {
+                            currentTurn = '2';
+                            jTextField1.setText("Player 1");
+                            jTextField2.setText("PLAYING");
+                        } else {
+                            currentTurn = '4';
+                            jTextField1.setText("WINNER");
+                        }
+                    }
+                    case '2'->{ 
+                        if (!checkWin()) {
+                            currentTurn = '3';
+                            jTextField2.setText("Player 2");
+                            jTextField3.setText("PLAYING");
+                        } else {
+                            currentTurn = '4';
+                            jTextField2.setText("WINNER");
+                        }
+                    }
+                    case '3'->{ 
+                        if (!checkWin()) {
+                            currentTurn = '1';
+                            jTextField1.setText("PLAYING");
+                            jTextField3.setText("Player 3");
+                        } else {
+                            currentTurn = '4';
+                            jTextField3.setText("WINNER");
+                        }
+                    }
+                    default->{ System.out.println("Error occured"); }
+                }
+            }
+        }
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -293,11 +324,9 @@ public class MainGame extends javax.swing.JFrame {
     /*
     * @brief        a button that when pressed starts the game and assigns colors, or resets the game
     * @param[in]    ActionEvent 'evt' that triggers when a button is pressed
-    *
     * @pre          grid must be declared in gameScreen, user must click on the jButton
     * @post         will either start the game assigning colors to each player baced
     on there combo box choice, or will clear the board.
-    * @return       none
     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         player1.playerColor = getClr((String)jComboBox1.getSelectedItem());
@@ -309,7 +338,7 @@ public class MainGame extends javax.swing.JFrame {
             switch (jButton1.getText()) {
                 case "Start Game"->{
                     jButton1.setText("Reset Game");
-                    jTextField1.setText("Player 1");
+                    jTextField1.setText("PLAYING");
                 }
                 case "Reset Game"->{
                     jButton1.setText("Start Game");
@@ -333,11 +362,10 @@ public class MainGame extends javax.swing.JFrame {
    
     /*
     * @brief        take the string from a players combo box, and return correct Color.
-    * @param[in]    String 'colorName' is the selected color in the combo box
-    *
+    * @param        String 'colorName' is the selected color in the combo box
     * @pre          grid must be declared in gameScreen, user must select a color in the combo box
     * @post         will return color baceed on string receved
-    * @return       Color baced on string
+    * @return       Color baced on the param String
     */
     public Color getClr(String colorName) {
         switch (colorName) {
