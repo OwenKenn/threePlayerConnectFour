@@ -12,7 +12,7 @@ import java.awt.event.ActionListener; // for implimenting the action listener in
 * @date    2026-01-24 to 2026-01-30
 * @brief   A three player game of connect 4, with a reset button. Diagonal wins counted as well. Displays winner/tie in jTextFields
 * @Todo    General code improvement, submission of assignment
-* 
+*
 * @Note     if a 'if-statment' can be condenced to a single line, I will do so to shorten the program length
 */
 public class MainGame extends javax.swing.JFrame {
